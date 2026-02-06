@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocol: ETERNAL_LOVE // For Her</title>
+    <style>
+        /* --- CORE VISUALS --- */
+        :root {
+            --primary: #ff0055;
+            --secondary: #00ffff;
+            --bg: #050510;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg);
+            font-family: 'Courier New', Courier, monospace; /* Dev/Hacker aesthetic */
+            color: white;
+            user-select: none;
+        }
+
+        canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* --- UI LAYER --- */
+        #interface {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .hud-text {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .top-left { position: absolute; top: 30px; left: 30px; }
+        .top-right { position: absolute; top: 30px; right: 30px; text-align: right; }
+        .bottom-left { position: absolute; bottom: 30px; left: 30px; }
+        .bottom-right { position: absolute; bottom: 30px; right: 30px; text-align: right; }
+
+        /* --- TERMINAL WINDOW --- */
+        #terminal-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            pointer-events: auto;
+            text-align: center;
+        }
+
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            transition: opacity 1s ease;
+        }
+
+        #main-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px var(--primary);
+            opacity: 0;
+        }
+
+        #typewriter {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            min-height: 100px;
+            color: #e0e0e0;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: var(--primary);
+            animation: blink 1s infinite;
+            vertical-align: bottom;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        #action-btn {
+            margin-top: 30px;
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 15px 50px;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            opacity: 0; /* Hidden initially */
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        #action-btn:hover {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 30px var(--primary);
+        }
+
+        /* --- LOADING OVERLAY --- */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary);
+            font-size: 14px;
+            letter-spacing: 5px;
+        }
+
+        .hidden { opacity: 0; pointer-events: none; }
+
+    </style>
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="loader">INITIALIZING PHYSICS ENGINE...</div>
+
+    <div id="canvas-container"></div>
+
+    <div id="interface">
+        <div class="hud-text top-left">COORD: 12.9716° N, 77.5946° E</div>
+        <div class="hud-text top-right">DATE: 07.02.2026</div>
+        <div class="hud-text bottom-left">STATUS: CONNECTED</div>
+        <div class="hud-text bottom-right">MEMORY: 100%</div>
+        
+        <div id="terminal-container">
+            <div class="glass-panel" id="panel">
+                <h1 id="main-title">ROSE_DAY.EXE</h1>
+                <div id="typewriter"></div><span class="cursor"></span>
+                <br>
+                <button id="action-btn">INITIATE SEQUENCE</button>
+            </div>
+        </div>
+    </div>
+
+    <script id="vertexShader" type="x-shader/x-vertex">
+        uniform float time;
+        uniform float size;
+        attribute float scale;
+        attribute vec3 customColor;
+        varying vec3 vColor;
+        
+        void main() {
+            vColor = customColor;
+            vec3 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_PointSize = size * scale * (300.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+        }
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+        uniform vec3 color;
+        uniform sampler2D pointTexture;
+        varying vec3 vColor;
+        
+        void main() {
+            // Circular particle shape with soft edge
+            vec2 xy = gl_PointCoord.xy - vec2(0.5);
+            float ll = length(xy);
+            if (ll > 0.5) discard;
+            
+            // Glow gradient
+            float alpha = (0.5 - ll) * 2.0;
+            gl_FragColor = vec4(color * vColor, alpha);
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- CONFIGURATION CLASS ---
+        class AppConfig {
+            constructor() {
+                this.particleCount = 15000; // High density for "Masterpiece" feel
+                this.roseSize = 12;
+                this.colors = {
+                    background: 0x050505,
+                    particleBase: new THREE.Color(0xffffff),
+                    particleRose: new THREE.Color(0xe0003a), // Deep Rose Red
+                    particleGold: new THREE.Color(0xffd700)
+                };
+                this.messages = [
+                    "Initializing system...",
+                    "Searching memory banks...",
+                    "Object found: 'My Love'",
+                    "Even though distance separates us...",
+                    "You are always the code running in my heart.",
+                    "Happy Rose Day, my love. 🌹"
+                ];
+                this.typingSpeed = 50;
+            }
+        }
+        
+        const Config = new AppConfig();
+
+        // --- MAIN ENGINE ---
+        class Experience {
+            constructor() {
+                this.container = document.getElementById('canvas-container');
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                this.clock = new THREE.Clock();
+                this.isBloomed = false;
+                
+                // State management
+                this.particles = null;
+                this.geometry = null;
+                this.material = null;
+                this.positions = []; // Store target positions
+                this.initialPositions = []; // Store chaotic positions
+                
+                this.init();
+            }
+
+            init() {
+                // Setup Renderer
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.container.appendChild(this.renderer.domElement);
+                
+                // Setup Camera
+                this.camera.position.z = 40;
+                this.camera.position.y = 5;
+
+                // Setup Controls
+                this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+                this.controls.enableDamping = true;
+                this.controls.autoRotate = true;
+                this.controls.autoRotateSpeed = 0.5;
+
+                // Setup Objects
+                this.createParticles();
+                
+                // Event Listeners
+                window.addEventListener('resize', this.onResize.bind(this));
+                document.getElementById('action-btn').addEventListener('click', this.bloom.bind(this));
+                
+                // Remove Loader
+                document.getElementById('loader').classList.add('hidden');
+                
+                // Start Loop
+                this.animate();
+                
+                // Start Typing
+                this.runTypewriter();
+            }
+
+            // --- MATHEMATICAL ROSE GENERATION ---
+            // Uses Rhodonea Curve logic converted to 3D Spherical Coordinates
+            getRosePosition(i, count) {
+                // Determine 'k' for rose shape (k=4 gives 8 petals, k=5 gives 5)
+                const k = 4; 
+                
+                // Normalized index
+                const t = (i / count) * Math.PI * 20; // 20 loops
+                
+                // Rose equation (Polar)
+                const r = Math.cos(k * t) * Config.roseSize;
+                
+                // Convert to 3D (adding depth for a volumetric flower)
+                const x = r * Math.cos(t);
+                const y = r * Math.sin(t);
+                
+                // Z-depth modulation to create layers of petals
+                const z = (Math.sin(t * 4) * 2) + (Math.random() - 0.5) * 2;
+                
+                return new THREE.Vector3(x, y, z);
+            }
+
+            createParticles() {
+                // Shader Material
+                this.material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        color: { value: new THREE.Color(0xffffff) },
+                        size: { value: 6.0 * window.devicePixelRatio },
+                        time: { value: 0 }
+                    },
+                    vertexShader: document.getElementById('vertexShader').textContent,
+                    fragmentShader: document.getElementById('fragmentShader').textContent,
+                    depthTest: false,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending
+                });
+
+                this.geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(Config.particleCount * 3);
+                const colors = new Float32Array(Config.particleCount * 3);
+                const scales = new Float32Array(Config.particleCount);
+
+                const color1 = new THREE.Color(0xffffff); // Star color
+                const color2 = Config.colors.particleRose; // Rose color
+
+                for (let i = 0; i < Config.particleCount; i++) {
+                    // 1. Calculate CHAOS position (Big Bang state)
+                    const i3 = i * 3;
+                    const r = 50 + Math.random() * 50;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(2 * Math.random() - 1);
+                    
+                    positions[i3] = r * Math.sin(phi) * Math.cos(theta);
+                    positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                    positions[i3 + 2] = r * Math.cos(phi);
+                    
+                    this.initialPositions.push(new THREE.Vector3(positions[i3], positions[i3+1], positions[i3+2]));
+
+                    // 2. Calculate ROSE position (Target state)
+                    // We mix equations to get a dense center and wispy edges
+                    let target;
+                    if (i < Config.particleCount * 0.8) {
+                        // Core Rose
+                        target = this.getRosePosition(i, Config.particleCount * 0.8);
+                    } else {
+                        // Floating dust around the rose
+                        const angle = Math.random() * Math.PI * 2;
+                        const radius = 15 + Math.random() * 10;
+                        target = new THREE.Vector3(
+                            Math.cos(angle) * radius,
+                            Math.sin(angle) * radius,
+                            (Math.random() - 0.5) * 10
+                        );
+                    }
+                    this.positions.push(target);
+
+                    // Colors
+                    colors[i3] = color1.r;
+                    colors[i3 + 1] = color1.g;
+                    colors[i3 + 2] = color1.b;
+
+                    // Random scales for twinkling effect
+                    scales[i] = Math.random();
+                }
+
+                this.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                this.geometry.setAttribute('customColor', new THREE.BufferAttribute(colors, 3));
+                this.geometry.setAttribute('scale', new THREE.BufferAttribute(scales, 1));
+
+                this.particles = new THREE.Points(this.geometry, this.material);
+                this.scene.add(this.particles);
+            }
+
+            bloom() {
+                if (this.isBloomed) return;
+                this.isBloomed = true;
+                
+                // UI Transition
+                document.getElementById('action-btn').style.opacity = 0;
+                document.getElementById('action-btn').style.pointerEvents = 'none';
+                document.querySelector('.hud-text.bottom-left').innerText = "STATUS: BLOOMING...";
+
+                // Animation Logic in the loop handles the interpolation
+                
+                // Change Colors gradually
+                const colors = this.geometry.attributes.customColor.array;
+                const targetColor = Config.colors.particleRose;
+                
+                // Simple color interpolation hack for immediate visual feedback
+                // Ideally we do this in shader, but CPU is fine for one-off transition
+                for(let i=0; i<Config.particleCount; i++) {
+                     // Keep some white stars, turn most red
+                     if (Math.random() > 0.1) {
+                         colors[i*3] = targetColor.r;
+                         colors[i*3+1] = targetColor.g;
+                         colors[i*3+2] = targetColor.b;
+                     }
+                }
+                this.geometry.attributes.customColor.needsUpdate = true;
+            }
+
+            runTypewriter() {
+                const title = document.getElementById('main-title');
+                const textContainer = document.getElementById('typewriter');
+                const btn = document.getElementById('action-btn');
+                
+                // Fade in Title
+                setTimeout(() => {
+                    title.style.transition = "opacity 2s";
+                    title.style.opacity = 1;
+                }, 500);
+
+                let msgIndex = 0;
+                
+                const typeNextMessage = () => {
+                    if (msgIndex >= Config.messages.length) {
+                        // Final state
+                        btn.style.opacity = 1;
+                        return;
+                    }
+
+                    const currentMsg = Config.messages[msgIndex];
+                    let charIndex = 0;
+                    textContainer.innerHTML = ""; // Clear previous line
+                    
+                    const interval = setInterval(() => {
+                        textContainer.textContent += currentMsg.charAt(charIndex);
+                        charIndex++;
+                        if (charIndex >= currentMsg.length) {
+                            clearInterval(interval);
+                            msgIndex++;
+                            setTimeout(typeNextMessage, 1500); // Wait before next line
+                        }
+                    }, Config.typingSpeed);
+                };
+
+                // Start sequence after title
+                setTimeout(typeNextMessage, 2000);
+            }
+
+            onResize() {
+                this.camera.aspect = window.innerWidth / window.innerHeight;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            animate() {
+                requestAnimationFrame(this.animate.bind(this));
+
+                const time = this.clock.getElapsedTime();
+                this.controls.update();
+                
+                // Update Shader Time
+                this.material.uniforms.time.value = time;
+
+                // PARTICLE PHYSICS INTERPOLATION
+                // This moves particles from "Chaos" (initial) to "Rose" (target)
+                const positions = this.geometry.attributes.position.array;
+                
+                // The speed of convergence (Lerp factor)
+                // If not bloomed, stay in chaos (factor 0). If bloomed, move to 1.
+                // We use a smoothstep-like logic for the transition
+                
+                const lerpSpeed = 0.02; 
+                
+                for (let i = 0; i < Config.particleCount; i++) {
+                    const i3 = i * 3;
+                    
+                    let target = this.isBloomed ? this.positions[i] : this.initialPositions[i];
+                    
+                    // Add subtle noise movement (breathing effect)
+                    const noise = Math.sin(time + i) * 0.05;
+
+                    positions[i3] += (target.x - positions[i3]) * lerpSpeed + noise;
+                    positions[i3 + 1] += (target.y - positions[i3 + 1]) * lerpSpeed + noise;
+                    positions[i3 + 2] += (target.z - positions[i3 + 2]) * lerpSpeed + noise;
+                }
+                
+                this.geometry.attributes.position.needsUpdate = true;
+
+                // Rotation of the whole system
+                if(this.isBloomed) {
+                    this.particles.rotation.z = time * 0.1;
+                } else {
+                    this.particles.rotation.y = time * 0.05;
+                }
+
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+
+        // Initialize Application
+        new Experience();
+    </script>
+</body>
+</html>
