@@ -543,7 +543,7 @@
 
         // PHOTO
         const texLoader = new THREE.TextureLoader();
-        const photoTex = texLoader.load('her.jpg'); photoTex.colorSpace = THREE.SRGBColorSpace;
+        const photoTex = texLoader.load('https://i.postimg.cc/hhJDWGm3/her.jpg'); photoTex.colorSpace = THREE.SRGBColorSpace;
         const holoMat = new THREE.ShaderMaterial({
             uniforms: { uTexture: { value: photoTex }, uTime: { value: 0 } },
             vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
