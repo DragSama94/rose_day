@@ -2,105 +2,268 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>For Her Highness 👑🌹</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SINGULARITY // KANMANI 🌹</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Monsieur+La+Doulaise&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 
     <style>
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #050005; /* Deep Royal Purple/Black */
-            font-family: 'Cinzel', serif;
+            background-color: #000;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            user-select: none;
+            cursor: none;
         }
 
-        canvas {
+        #canvas-container {
             position: fixed;
-            top: 0; left: 0;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
+            opacity: 0; 
+            transition: opacity 3s ease-in-out;
         }
 
-        /* --- UI OVERLAY --- */
-        #ui-layer {
+        /* CUSTOM CURSOR */
+        #cursor-ring {
+            position: fixed;
+            width: 40px; height: 40px;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 999; 
+            transition: width 0.2s, height 0.2s, border-color 0.2s;
+            mix-blend-mode: difference;
+        }
+        #cursor-dot {
+            position: fixed;
+            width: 6px; height: 6px;
+            background: #ff0055;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* UI OVERLAY */
+        #ui {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 10;
             pointer-events: none;
+        }
+
+        /* --- 1. LOVE LETTER (FIRST SCREEN) --- */
+        #love-letter-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505;
+            z-index: 500; 
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 40px;
-            box-sizing: border-box;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 1.5s ease-out;
+            pointer-events: auto;
         }
 
-        .header {
+        .letter-card {
+            background: rgba(20, 0, 10, 0.8);
+            border: 1px solid #ff0055;
+            box-shadow: 0 0 60px rgba(255, 0, 85, 0.2);
+            padding: 50px;
             text-align: center;
-            opacity: 0;
-            animation: fadeInDown 2s ease-out forwards 1s;
+            max-width: 600px;
+            border-radius: 0px; 
+            position: relative;
         }
 
-        h1 {
-            font-family: 'Monsieur La Doulaise', cursive;
-            font-size: 5rem;
+        .kanmani-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
             color: #ff0055;
             margin: 0;
-            text-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
-            line-height: 0.8;
-        }
-
-        h2 {
-            font-size: 1rem;
-            color: #d4af37; /* Gold */
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            margin-top: 10px;
-        }
-
-        .footer {
-            text-align: center;
-            opacity: 0;
-            animation: fadeInUp 2s ease-out forwards 2s;
-        }
-
-        .instruction {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
-            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 0, 85, 0.8);
             margin-bottom: 20px;
-            animation: pulse 2s infinite;
         }
 
-        #click-trigger {
-            pointer-events: auto;
+        .love-note {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            color: #eee;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        .highlight-word { color: #00ffff; font-weight: bold; text-shadow: 0 0 10px #00ffff; }
+
+        .enter-btn {
+            background: transparent;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            padding: 15px 40px;
             cursor: pointer;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 5;
+            letter-spacing: 3px;
+            transition: all 0.3s;
+            text-transform: uppercase;
         }
 
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .enter-btn:hover { background: #00ffff; color: #000; box-shadow: 0 0 30px #00ffff; }
 
-        /* --- LOADING OVERLAY --- */
-        #loader {
+        /* --- 2. INTRO SYSTEM --- */
+        #intro-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: #000;
             z-index: 100;
-            display: flex;
+            display: flex; 
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #d4af37;
-            font-size: 1rem;
-            letter-spacing: 5px;
-            transition: opacity 1s;
+            font-family: 'Orbitron', sans-serif;
+            transition: background 1s ease-out;
+            pointer-events: none; 
+            opacity: 0;
         }
+
+        #special-msg-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            text-align: center;
+            border: 1px solid #ff0055;
+            padding: 40px;
+            background: rgba(20, 0, 10, 0.95);
+            box-shadow: 0 0 50px rgba(255, 0, 85, 0.3);
+            transition: all 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+            z-index: 101;
+            width: 450px;
+            opacity: 0; 
+        }
+
+        #special-msg-container.visible { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+        #special-msg-container.docked {
+            top: 100px; left: auto; right: 50px;
+            transform: translate(0, 0) scale(0.6);
+            padding: 15px; width: auto;
+            background: rgba(0, 0, 0, 0.5);
+            border-color: #00ffff; box-shadow: none;
+        }
+
+        .msg-label {
+            font-size: 0.8rem; color: #00ffff; letter-spacing: 4px;
+            margin-bottom: 15px; border-bottom: 1px solid #00ffff;
+            padding-bottom: 5px; display: inline-block;
+        }
+
+        .msg-content {
+            font-size: 1.8rem; color: #fff; font-weight: 700;
+            text-shadow: 0 0 10px #ff0055; line-height: 1.4;
+        }
+
+        #special-msg-container.docked .msg-content {
+            font-size: 1.2rem; color: #00ffff; text-shadow: 0 0 5px #00ffff;
+        }
+
+        /* --- 3. TROLL ALERT (EASTER EGG) --- */
+        #troll-alert {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #ff0055;
+            padding: 40px;
+            text-align: center;
+            z-index: 200;
+            font-family: 'Orbitron', sans-serif;
+            color: #ff0055;
+            box-shadow: 0 0 50px #ff0055;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none; 
+            width: 400px;
+        }
+        
+        #troll-alert.active { transform: translate(-50%, -50%) scale(1); }
+        
+        .troll-header { 
+            font-size: 0.8rem; letter-spacing: 5px; margin-bottom: 15px; 
+            border-bottom: 1px solid #ff0055; display:inline-block; color: #fff;
+        }
+        .troll-body { 
+            font-size: 1.5rem; color: #fff; line-height: 1.5;
+            text-shadow: 0 0 10px #ff0055; text-transform: uppercase;
+        }
+
+        /* Logs & Bar */
+        #system-log {
+            position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%);
+            text-align: left; font-family: 'Rajdhani', monospace;
+            color: #00ff88; font-size: 0.9rem; height: 100px;
+            overflow: hidden; width: 300px; opacity: 0.7;
+        }
+        .log-entry { margin: 2px 0; text-shadow: 0 0 5px #00ff88; }
+
+        #progress-container {
+            position: absolute; bottom: 120px; width: 300px; height: 4px;
+            background: #222; border-radius: 2px; overflow: hidden;
+        }
+        #progress-bar {
+            width: 0%; height: 100%;
+            background: linear-gradient(90deg, #00ffff, #ff0055);
+            box-shadow: 0 0 10px #00ffff;
+            transition: width 0.1s linear;
+        }
+
+        /* --- HUD --- */
+        .hud-header {
+            position: absolute; top: 60px; width: 100%; text-align: center;
+            opacity: 0; transition: opacity 2s ease-in 2s;
+            pointer-events: auto; 
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif; font-size: 3rem; margin: 0;
+            letter-spacing: 15px;
+            background: linear-gradient(to right, #00ffff, #ff0055);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 85, 0.5));
+            pointer-events: none;
+        }
+        /* TRIGGER BUTTON */
+        #secret-trigger {
+            font-size: 1.2rem; color: #ff0055; letter-spacing: 8px;
+            text-transform: uppercase; margin-top: 15px; font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 0, 85, 0.3);
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.2s, text-shadow 0.2s;
+        }
+        #secret-trigger:hover {
+            transform: scale(1.1);
+            text-shadow: 0 0 20px rgba(255, 0, 85, 1);
+        }
+
+        .hud-footer {
+            position: absolute; bottom: 50px; width: 100%;
+            display: flex; justify-content: space-between;
+            padding: 0 80px; box-sizing: border-box;
+            opacity: 0; transition: opacity 2s ease-in 3s;
+        }
+        .stat-box {
+            font-family: 'Orbitron'; font-size: 0.7rem; color: #00ffff;
+            border-top: 1px solid rgba(255, 0, 85, 0.5);
+            padding-top: 15px; letter-spacing: 2px;
+        }
+
     </style>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
     <script type="importmap">
         {
             "imports": {
@@ -112,20 +275,149 @@
 </head>
 <body>
 
-    <div id="loader">CONJURING MAGIC...</div>
+    <div id="cursor-ring"></div>
+    <div id="cursor-dot"></div>
+    <div id="canvas-container"></div>
 
-    <div id="ui-layer">
-        <div class="header">
-            <h2>Happy Rose Day</h2>
-            <h1>My Princess</h1>
-        </div>
-        <div class="footer">
-            <div class="instruction">Tap screen to transform</div>
+    <div id="love-letter-overlay">
+        <div class="letter-card">
+            <h1 class="kanmani-title">My Kanmani</h1>
+            <div class="love-note">
+                My dearest Anmol,<br><br>
+                They say <b>'Kanmani'</b> means a precious gem, the very apple of one's eye. But to me, you are the gravity that holds my entire universe together.<br><br>
+                Every day with you feels like a beautiful dream. Even across the distance, you are the closest thing to my heart. I am so incredibly happy to be yours.<br><br>
+                Every time I see you, I feel a gust of happiness flowing through me. I smile a lot looking at you, my sweetheart.<br><br>
+                You are my <span class="highlight-word">small pack with a big explosion</span> of love.
+            </div>
+            <button class="enter-btn" onclick="dismissLetter()">Enter Our Universe</button>
         </div>
     </div>
 
-    <div id="click-trigger"></div>
-    <div id="canvas-container"></div>
+    <div id="intro-screen">
+        <div id="special-msg-container">
+            <div class="msg-label">INCOMING TRANSMISSION</div>
+            <div class="msg-content" id="msg-typed"></div>
+        </div>
+        <div id="system-log"></div>
+        <div id="progress-container"><div id="progress-bar"></div></div>
+    </div>
+
+    <div id="troll-alert">
+        <div class="troll-header">SUBJECT ANALYSIS</div>
+        <div class="troll-body" id="troll-msg"></div>
+    </div>
+
+    <div id="ui">
+        <div class="hud-header">
+            <h1>SINGULARITY</h1>
+            <h2 id="secret-trigger">FOR ANMOL</h2> 
+        </div>
+        <div class="hud-footer">
+            <div class="stat-box">STATUS: CONNECTED</div>
+            <div class="stat-box">TARGET DATE: MARCH 06</div>
+        </div>
+    </div>
+
+    <script>
+        // --- SEQUENCE CONTROLLER ---
+        function dismissLetter() {
+            const overlay = document.getElementById('love-letter-overlay');
+            const intro = document.getElementById('intro-screen');
+            
+            overlay.style.opacity = 0;
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                intro.style.opacity = 1; 
+                intro.style.pointerEvents = 'auto';
+                runSystemBoot(); 
+            }, 1500);
+        }
+
+        // --- INTRO SEQUENCE ---
+        const message = "Happy Rose Day to my dear Anmol";
+        const msgContainer = document.getElementById('msg-typed');
+        const box = document.getElementById('special-msg-container');
+        const introBg = document.getElementById('intro-screen');
+        const logBox = document.getElementById('system-log');
+        const progBar = document.getElementById('progress-bar');
+
+        const logs = [
+            "INITIALIZING KERNEL...", "LOADING STARDUST PROTOCOL...", "CALIBRATING ROSES...",
+            "SYNCING HEARTS...", "CHECKING DISTANCE: 0.00 KM", "TARGET ACQUIRED: ANMOL", "SYSTEM READY."
+        ];
+
+        function addLog(text) {
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+            div.innerHTML = `> ${text}`;
+            logBox.appendChild(div);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function typeWriter(text, i, fnCallback) {
+            if (i < text.length) {
+                msgContainer.innerHTML = text.substring(0, i+1) + '<span aria-hidden="true"></span>';
+                setTimeout(function() { typeWriter(text, i + 1, fnCallback) }, 80);
+            } else if (typeof fnCallback == 'function') {
+                setTimeout(fnCallback, 1000);
+            }
+        }
+
+        function runSystemBoot() {
+            let p = 0;
+            const timer = setInterval(() => {
+                p += 2;
+                progBar.style.width = p + "%";
+                if(p % 15 === 0 && logs.length > 0) addLog(logs.shift());
+                if(p >= 100) { clearInterval(timer); startMessage(); }
+            }, 50);
+        }
+
+        function startMessage() {
+            document.getElementById('system-log').style.opacity = 0;
+            document.getElementById('progress-container').style.opacity = 0;
+            box.classList.add('visible');
+            setTimeout(() => { typeWriter(message, 0, function(){ launchScene(); }); }, 500);
+        }
+
+        function launchScene() {
+            document.getElementById('canvas-container').style.opacity = 1;
+            document.querySelector('.hud-header').style.opacity = 1;
+            document.querySelector('.hud-footer').style.opacity = 1;
+            introBg.style.background = 'transparent';
+            box.classList.add('docked');
+            setTimeout(() => { introBg.style.pointerEvents = 'none'; }, 1500);
+        }
+
+        // --- TROLL MESSAGE LOGIC (FULL LIST) ---
+        const trollMsgs = [
+            "SUBJECT HEIGHT: 5'2\" (POCKET SIZE CONFIRMED)",
+            "WARNING: HIGH LEVELS OF CUTENESS DETECTED.",
+            "ERROR: TOO SHORT TO RIDE THIS ROLLERCOASTER.",
+            "STATUS: SMOL BUT DANGEROUS.",
+            "SYSTEM NOTE: HANDLE WITH CARE (AND SNACKS).",
+            "LOVES CHICKEN (MAY BITE IF HUNGRY)",
+            "WARNING: PROTEIN CRAVER DETECTED",
+            "CLASS: SMALL PACK, BIG EXPLOSION",
+            "IDENTITY CONFIRMED: MY GIRL",
+            "ANALYSIS: 99% ANGER, 1% HEIGHT"
+        ];
+
+        const trollAlert = document.getElementById('troll-alert');
+        const trollText = document.getElementById('troll-msg');
+        let trollTimeout;
+
+        document.getElementById('secret-trigger').addEventListener('click', () => {
+            const msg = trollMsgs[Math.floor(Math.random() * trollMsgs.length)];
+            trollText.innerText = msg;
+            trollAlert.classList.add('active');
+            
+            clearTimeout(trollTimeout);
+            trollTimeout = setTimeout(() => {
+                trollAlert.classList.remove('active');
+            }, 4000);
+        });
+    </script>
 
     <script type="module">
         import * as THREE from 'three';
@@ -133,276 +425,280 @@
         import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
         import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
         import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
-        // --- CONFIGURATION ---
         const CONFIG = {
-            particleCount: 25000, // HIGH DENSITY
-            particleSize: 0.15,
-            bloomStrength: 2.0, // Very dreamy
-            bloomRadius: 0.5,
-            colors: {
-                rose: new THREE.Color('#ff0055'), // Deep Pink
-                heart: new THREE.Color('#ff0000'), // Red
-                gold: new THREE.Color('#ffaa00'), // Gold sparks
-                void: 0x050005
-            }
+            bloomStrength: 1.35, 
+            bloomThreshold: 0.4, 
+            bloomRadius: 0.8,
+            roseColor: new THREE.Color('#ff0040'),
+            blueColor: new THREE.Color('#00ffff'),
         };
 
-        // --- SCENE SETUP ---
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(CONFIG.colors.void, 0.02);
+        scene.fog = new THREE.FogExp2(0x000000, 0.005); 
 
-        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 0, 30);
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 5000); 
+        camera.position.set(0, 5, 40);
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
-        controls.enableZoom = false; // Keep the frame cinematic
+        controls.enablePan = false;
+        controls.minDistance = 20;
+        controls.maxDistance = 500; 
         controls.autoRotate = true;
         controls.autoRotateSpeed = 0.5;
 
-        // --- PARTICLE SYSTEM ---
-        const geometry = new THREE.BufferGeometry();
-        
-        // Attributes
-        const positions = new Float32Array(CONFIG.particleCount * 3);
-        const colors = new Float32Array(CONFIG.particleCount * 3);
-        const sizes = new Float32Array(CONFIG.particleCount);
-        
-        // Target Positions (Morphing Logic)
-        const rosePositions = new Float32Array(CONFIG.particleCount * 3);
-        const heartPositions = new Float32Array(CONFIG.particleCount * 3);
-        
-        // --- 1. GENERATE ROSE SHAPE ---
-        for (let i = 0; i < CONFIG.particleCount; i++) {
-            const i3 = i * 3;
+        const mouse = new THREE.Vector2();
+        const targetMouse = new THREE.Vector2();
+        const cursorRing = document.getElementById('cursor-ring');
+        const cursorDot = document.getElementById('cursor-dot');
 
-            // Rose Math (Rhodonea Curve 3D)
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos((Math.random() * 2) - 1);
-            
-            // "k" determines petals. k=4 is classic.
-            // We layer multiple sizes to create volume
-            const rBase = 8; 
-            const k = 3; 
-            
-            // Parametric Rose Equation
-            let r = (Math.cos(k * theta * 2) + 2) * (Math.random() * 2 + 0.5);
-            
-            // Convert to Cartesian
-            const x = r * Math.cos(theta) * Math.sin(phi);
-            const y = r * Math.sin(theta) * Math.sin(phi);
-            const z = r * Math.cos(phi) * 0.5; // Flatten z slightly
-            
-            rosePositions[i3] = x;
-            rosePositions[i3+1] = y;
-            rosePositions[i3+2] = z;
-            
-            // Initial Position = Rose
-            positions[i3] = x;
-            positions[i3+1] = y;
-            positions[i3+2] = z;
-
-            // Colors (Mix of Pink and Gold)
-            const isGold = Math.random() > 0.8;
-            const c = isGold ? CONFIG.colors.gold : CONFIG.colors.rose;
-            colors[i3] = c.r;
-            colors[i3+1] = c.g;
-            colors[i3+2] = c.b;
-            
-            sizes[i] = Math.random();
-        }
-
-        // --- 2. GENERATE HEART SHAPE ---
-        for (let i = 0; i < CONFIG.particleCount; i++) {
-            const i3 = i * 3;
-            
-            // Heart Math
-            // x = 16sin^3(t)
-            // y = 13cos(t) - 5cos(2t) - 2cos(3t) - cos(4t)
-            
-            const t = Math.random() * Math.PI * 2;
-            const scale = 0.5; // Scale down to fit screen
-            
-            // Add volume to the heart (randomness inside the shape)
-            const v = Math.random(); 
-            
-            let x = 16 * Math.pow(Math.sin(t), 3);
-            let y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-            let z = (Math.random() - 0.5) * 6; // Depth
-            
-            // Apply scale and randomize slightly to fill volume
-            x *= scale * v;
-            y *= scale * v;
-            
-            heartPositions[i3] = x;
-            heartPositions[i3+1] = y + 2; // Shift up slightly
-            heartPositions[i3+2] = z;
-        }
-
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-        // --- SHADER MATERIAL (Sparkles) ---
-        const material = new THREE.ShaderMaterial({
-            uniforms: {
-                pointTexture: { value: new THREE.TextureLoader().load('https://assets.codepen.io/127738/dotTexture.png') }, // Fallback texture or procedural
-                uTime: { value: 0 }
-            },
-            vertexShader: `
-                attribute float size;
-                varying vec3 vColor;
-                uniform float uTime;
-                void main() {
-                    vColor = color;
-                    vec3 pos = position;
-                    
-                    // Add subtle breathing movement
-                    float breath = sin(uTime * 2.0 + position.x) * 0.1;
-                    pos += normal * breath;
-                    
-                    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-                    gl_PointSize = size * (300.0 / -mvPosition.z);
-                    gl_Position = projectionMatrix * mvPosition;
-                }
-            `,
-            fragmentShader: `
-                varying vec3 vColor;
-                void main() {
-                    // Create soft circular particle
-                    float d = distance(gl_PointCoord, vec2(0.5));
-                    if(d > 0.5) discard;
-                    
-                    // Glow gradient
-                    float alpha = 1.0 - (d * 2.0);
-                    alpha = pow(alpha, 1.5);
-                    
-                    gl_FragColor = vec4(vColor, alpha);
-                }
-            `,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending,
-            transparent: true
+        window.addEventListener('mousemove', (e) => {
+            cursorRing.style.left = e.clientX + 'px';
+            cursorRing.style.top = e.clientY + 'px';
+            cursorDot.style.left = e.clientX + 'px';
+            cursorDot.style.top = e.clientY + 'px';
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
         });
 
-        // Use a simple circle canvas texture to avoid CORS issues if external image fails
-        function getSprite() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 32; canvas.height = 32;
-            const ctx = canvas.getContext('2d');
-            const grad = ctx.createRadialGradient(16,16,0,16,16,16);
-            grad.addColorStop(0, 'rgba(255,255,255,1)');
-            grad.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0,0,32,32);
-            return new THREE.CanvasTexture(canvas);
+        // 1. TERRAIN
+        const planeGeo = new THREE.PlaneGeometry(600, 600, 120, 120); 
+        const terrainMat = new THREE.ShaderMaterial({
+            uniforms: { uTime: { value: 0 }, uColor: { value: new THREE.Color('#ff0055') }, uMouse: { value: new THREE.Vector2(0,0) }, uHover: { value: 0.0 } },
+            transparent: true, wireframe: true,
+            vertexShader: `uniform float uTime; uniform vec2 uMouse; uniform float uHover; varying vec2 vUv; varying float vElevation; void main() { vUv = uv; vec3 pos = position; float bigWave = sin(pos.x * 0.05 + uTime) * cos(pos.y * 0.05 + uTime) * 3.0; float smallRipple = sin(pos.x * 0.2 - uTime * 2.0) * 0.5; vec2 worldMouse = uMouse * 100.0; float dist = distance(pos.xy, worldMouse); float interaction = smoothstep(50.0, 0.0, dist) * 1.2 * uHover; pos.z += bigWave + smallRipple + interaction; float horizon = length(pos.xy) * 0.01; pos.z -= horizon*horizon; vElevation = pos.z; gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0); }`,
+            fragmentShader: `uniform vec3 uColor; varying vec2 vUv; varying float vElevation; void main() { float highlight = smoothstep(0.0, 8.0, vElevation) * 0.25; float alpha = (1.0 - distance(vUv, vec2(0.5))) * 0.5; gl_FragColor = vec4(uColor + highlight, alpha); }`,
+            side: THREE.DoubleSide
+        });
+        const terrain = new THREE.Mesh(planeGeo, terrainMat);
+        terrain.rotation.x = -Math.PI / 2; terrain.position.y = -12;
+        scene.add(terrain);
+
+        // 2-10 GRIDS
+        const interGrid = new THREE.Mesh(new THREE.PlaneGeometry(700, 700, 60, 60), new THREE.MeshBasicMaterial({ color: 0x0044ff, wireframe: true, transparent: true, opacity: 0.08 }));
+        interGrid.rotation.x = -Math.PI/2; interGrid.position.y = -25; scene.add(interGrid);
+        
+        const subGrid = new THREE.Mesh(new THREE.PlaneGeometry(800, 800, 80, 80), new THREE.MeshBasicMaterial({ color: 0x0088aa, wireframe: true, transparent: true, opacity: 0.12 }));
+        subGrid.rotation.x = -Math.PI/2; subGrid.position.y = -40; scene.add(subGrid);
+        
+        const fluxGrid = new THREE.Mesh(new THREE.PlaneGeometry(500, 500, 150, 150), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.04 }));
+        fluxGrid.rotation.x = -Math.PI/2; fluxGrid.position.y = -18; scene.add(fluxGrid);
+        
+        const voidGrid = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200, 60, 60), new THREE.MeshBasicMaterial({ color: 0x220044, wireframe: true, transparent:true, opacity: 0.1 }));
+        voidGrid.rotation.x = -Math.PI/2; voidGrid.position.y = -80; scene.add(voidGrid);
+        
+        const crossGrid = new THREE.Mesh(new THREE.PlaneGeometry(900, 900, 40, 40), new THREE.MeshBasicMaterial({ color: 0x00ffcc, wireframe: true, transparent:true, opacity: 0.05 }));
+        crossGrid.rotation.x = -Math.PI/2; crossGrid.position.y = -55; scene.add(crossGrid);
+        
+        const noiseGrid = new THREE.Mesh(new THREE.PlaneGeometry(800, 800, 200, 200), new THREE.MeshBasicMaterial({ color: 0xaaaaaa, wireframe: true, transparent:true, opacity: 0.03 }));
+        noiseGrid.rotation.x = -Math.PI/2; noiseGrid.position.y = -65; scene.add(noiseGrid);
+        
+        const isoGrid = new THREE.Mesh(new THREE.PlaneGeometry(600, 600, 40, 40), new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true, transparent: true, opacity: 0.07 }));
+        isoGrid.rotation.x = -Math.PI/2; isoGrid.rotation.z = Math.PI/4; isoGrid.position.y = -22; scene.add(isoGrid);
+        
+        const microGeo = new THREE.BufferGeometry();
+        const microCount = 2000;
+        const microPos = [];
+        for(let i=0; i<microCount; i++) microPos.push((Math.random()-0.5)*600, (Math.random()-0.5)*10, (Math.random()-0.5)*600);
+        microGeo.setAttribute('position', new THREE.Float32BufferAttribute(microPos, 3));
+        const microGrid = new THREE.Points(microGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.5, transparent: true, opacity: 0.4 }));
+        microGrid.position.y = -15; scene.add(microGrid);
+        
+        const circuitGrid = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 20, 20), new THREE.MeshBasicMaterial({ color: 0xffaa00, wireframe: true, transparent: true, opacity: 0.06 }));
+        circuitGrid.rotation.x = -Math.PI/2; circuitGrid.position.y = -90; scene.add(circuitGrid);
+
+        // ROSE
+        const roseGroup = new THREE.Group(); scene.add(roseGroup);
+        function getRosePoint(t, k, size) {
+            const roseK = k; const theta = t * Math.PI * 2;
+            const r = (Math.cos(roseK * theta) + 2) * size;
+            const x = r * Math.cos(theta); const z = r * Math.sin(theta);
+            const y = Math.sin(theta * roseK * 2) * (size * 0.3);
+            return new THREE.Vector3(x, y, z);
         }
-        material.uniforms.pointTexture.value = getSprite();
-
-        const particleSystem = new THREE.Points(geometry, material);
-        scene.add(particleSystem);
-
-        // --- POST PROCESSING ---
-        const composer = new EffectComposer(renderer);
-        composer.addPass(new RenderPass(scene, camera));
-        
-        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), CONFIG.bloomStrength, CONFIG.bloomRadius, 0.1);
-        composer.addPass(bloomPass);
-
-        // --- INTERACTION & ANIMATION ---
-        
-        // Morph Logic
-        let currentShape = 'rose'; // 'rose' or 'heart'
-        
-        function transformShape() {
-            const target = currentShape === 'rose' ? heartPositions : rosePositions;
-            const colorTarget = currentShape === 'rose' ? CONFIG.colors.heart : CONFIG.colors.rose;
-            
-            // Tween Positions
-            const posAttr = geometry.attributes.position;
-            
-            // We use a dummy object to tween value 0 -> 1
-            const tweenObj = { t: 0 };
-            
-            // Store start positions
-            const startPositions = Float32Array.from(posAttr.array);
-            
-            new TWEEN.Tween(tweenObj)
-                .to({ t: 1 }, 2500) // 2.5 seconds
-                .easing(TWEEN.Easing.Elastic.Out) // Bouncy effect
-                .onUpdate(() => {
-                    for(let i=0; i<CONFIG.particleCount; i++) {
-                        const i3 = i*3;
-                        posAttr.array[i3] = startPositions[i3] + (target[i3] - startPositions[i3]) * tweenObj.t;
-                        posAttr.array[i3+1] = startPositions[i3+1] + (target[i3+1] - startPositions[i3+1]) * tweenObj.t;
-                        posAttr.array[i3+2] = startPositions[i3+2] + (target[i3+2] - startPositions[i3+2]) * tweenObj.t;
-                    }
-                    posAttr.needsUpdate = true;
-                })
-                .start();
-                
-            // Switch State
-            currentShape = currentShape === 'rose' ? 'heart' : 'rose';
-            
-            // Update UI Text
-            const h2 = document.querySelector('h2');
-            if(currentShape === 'heart') {
-                h2.innerText = "YOU ARE MY HEART";
-                h2.style.color = "#ff0000";
-                CONFIG.bloomStrength = 3.0; // Intensify glow
-            } else {
-                h2.innerText = "MY PRINCESS";
-                h2.style.color = "#d4af37";
-                CONFIG.bloomStrength = 2.0;
+        const LINES = 400; const SEGMENTS = 100; const positions = []; const colors = [];
+        for (let i = 0; i < LINES; i++) {
+            const layer = i / LINES; const size = 3 + layer * 10; const yOffset = (1 - layer) * 5;
+            for (let j = 0; j < SEGMENTS; j++) {
+                const t = j / SEGMENTS; const nextT = (j + 1) / SEGMENTS;
+                const p1 = getRosePoint(t, 4, size); const p2 = getRosePoint(nextT, 4, size);
+                positions.push(p1.x, p1.y + yOffset, p1.z); positions.push(p2.x, p2.y + yOffset, p2.z);
+                const col = (layer < 0.15) ? CONFIG.blueColor : CONFIG.roseColor;
+                colors.push(col.r, col.g, col.b); colors.push(col.r, col.g, col.b);
             }
         }
+        const roseGeo = new THREE.BufferGeometry();
+        roseGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        roseGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        roseGroup.add(new THREE.LineSegments(roseGeo, new THREE.LineBasicMaterial({ vertexColors: true, opacity: 0.5, transparent: true, blending: THREE.AdditiveBlending })));
+        roseGroup.add(new THREE.Points(roseGeo, new THREE.PointsMaterial({ vertexColors: true, size: 0.15, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending })));
 
-        // Click Listener
-        document.getElementById('click-trigger').addEventListener('click', transformShape);
+        // PHOTO
+        const texLoader = new THREE.TextureLoader();
+        const photoTex = texLoader.load('her.jpg'); photoTex.colorSpace = THREE.SRGBColorSpace;
+        const holoMat = new THREE.ShaderMaterial({
+            uniforms: { uTexture: { value: photoTex }, uTime: { value: 0 } },
+            vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+            fragmentShader: `uniform sampler2D uTexture; uniform float uTime; varying vec2 vUv; void main() { vec4 tex = texture2D(uTexture, vUv); float brightness = dot(tex.rgb, vec3(0.299, 0.587, 0.114)); float bgMask = smoothstep(0.1, 0.2, brightness); vec3 color = tex.rgb; float scan = sin(vUv.y * 150.0 - uTime * 5.0) * 0.5 + 0.5; scan = pow(scan, 8.0) * 0.1; float dist = distance(vUv, vec2(0.5)); float circleMask = smoothstep(0.5, 0.35, dist); float finalAlpha = circleMask * bgMask; gl_FragColor = vec4(color + scan, finalAlpha * 0.9); }`,
+            transparent: true, side: THREE.DoubleSide, blending: THREE.NormalBlending, depthWrite: true
+        });
+        const photoMesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 10.6), holoMat);
+        photoMesh.position.y = 4; photoMesh.position.z = 0.5; roseGroup.add(photoMesh);
+        const blocker = new THREE.Mesh(new THREE.PlaneGeometry(7.5, 10), new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide }));
+        blocker.position.z = -0.01; photoMesh.add(blocker);
 
-        // --- ANIMATION LOOP ---
-        const clock = new THREE.Clock();
-        
-        // Remove Loader
-        setTimeout(() => {
-            document.getElementById('loader').style.opacity = 0;
-            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 1000);
-        }, 1000);
+        // RINGS
+        const r1 = new THREE.Mesh(new THREE.TorusGeometry(8, 0.05, 16, 100), new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.5 })); r1.rotation.x = Math.PI/2; roseGroup.add(r1);
+        const r2 = new THREE.Mesh(new THREE.TorusGeometry(9, 0.03, 16, 100), new THREE.MeshBasicMaterial({ color: 0xff0055, transparent: true, opacity: 0.8 })); r2.rotation.x = Math.PI/2.2; roseGroup.add(r2);
+        const r3 = new THREE.Mesh(new THREE.TorusGeometry(9.5, 0.02, 16, 100), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3 })); roseGroup.add(r3);
 
-        function animate() {
-            requestAnimationFrame(animate);
-            const time = clock.getElapsedTime();
-            
-            TWEEN.update();
-            controls.update();
-            
-            // Update Uniforms
-            material.uniforms.uTime.value = time;
-            bloomPass.strength = CONFIG.bloomStrength;
-
-            // Gentle Float
-            particleSystem.rotation.y = time * 0.05;
-            particleSystem.position.y = Math.sin(time * 0.5) * 0.5;
-
-            composer.render();
+        // HEARTS
+        function createHeartTexture() {
+            const canvas = document.createElement('canvas'); canvas.width = 64; canvas.height = 64;
+            const ctx = canvas.getContext('2d'); ctx.fillStyle = '#ff0055';
+            ctx.beginPath(); ctx.moveTo(32, 58);
+            ctx.bezierCurveTo(32, 52, 10, 40, 10, 20); ctx.bezierCurveTo(10, 5, 30, 5, 32, 20);
+            ctx.bezierCurveTo(34, 5, 54, 5, 54, 20); ctx.bezierCurveTo(54, 40, 32, 52, 32, 58); ctx.fill();
+            return new THREE.CanvasTexture(canvas);
         }
+        const heartTex = createHeartTexture();
+        const heartCount = 50; const heartPos = new Float32Array(heartCount * 3); const heartSpeed = new Float32Array(heartCount);
+        for(let i=0; i<heartCount*3; i+=3) {
+            heartPos[i] = (Math.random()-0.5) * 150; heartPos[i+1] = Math.random() * 100 - 50; heartPos[i+2] = (Math.random()-0.5) * 100 - 20;
+            heartSpeed[i/3] = 0.1 + Math.random() * 0.2;
+        }
+        const heartGeo = new THREE.BufferGeometry(); heartGeo.setAttribute('position', new THREE.BufferAttribute(heartPos, 3));
+        const heartSystem = new THREE.Points(heartGeo, new THREE.PointsMaterial({ map: heartTex, size: 3, transparent: true, opacity: 0.6, depthWrite: false, blending: THREE.AdditiveBlending, color: 0xffaaaa }));
+        scene.add(heartSystem);
 
-        animate();
+        // PARTICLES
+        const pCount = 800; const pPos = new Float32Array(pCount * 3); const pOffsets = new Float32Array(pCount);
+        for(let i=0; i<pCount; i++) pOffsets[i] = Math.random() * 100;
+        const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0xaaaaaa, size: 0.2, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending }));
+        scene.add(particles);
 
-        // Resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            composer.setSize(window.innerWidth, window.innerHeight);
+        // BACKGROUND
+        const sCount = 8000; const sPos = new Float32Array(sCount * 3); const sPhase = new Float32Array(sCount);
+        for(let i=0; i<sCount*3; i+=3) { sPos[i] = (Math.random()-0.5) * 2000; sPos[i+1] = (Math.random()-0.5) * 2000; sPos[i+2] = (Math.random()-0.5) * 2000; sPhase[i/3] = Math.random()*Math.PI*2; }
+        const sGeo = new THREE.BufferGeometry(); sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3)); sGeo.setAttribute('phase', new THREE.BufferAttribute(sPhase, 1));
+        const sMat = new THREE.ShaderMaterial({
+            uniforms: { uTime: { value: 0 }, uColor: { value: new THREE.Color(1,1,1) } }, transparent: true,
+            vertexShader: `attribute float phase; varying float vAlpha; uniform float uTime; void main() { vec4 mvPosition = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * mvPosition; gl_PointSize = (150.0 / -mvPosition.z); float twinkle = sin(uTime * 2.0 + phase); vAlpha = 0.5 + 0.5 * twinkle; }`,
+            fragmentShader: `uniform vec3 uColor; varying float vAlpha; void main() { vec2 coord = gl_PointCoord - vec2(0.5); if(length(coord) > 0.5) discard; gl_FragColor = vec4(uColor, vAlpha); }`
+        });
+        const starfield = new THREE.Points(sGeo, sMat); scene.add(starfield);
+
+        const galacticCore = new THREE.Mesh(new THREE.TorusGeometry(180, 8, 16, 100), new THREE.MeshBasicMaterial({ color: 0x5500aa, transparent: true, opacity: 0.15 })); galacticCore.position.z = -200; galacticCore.rotation.x = Math.PI/2.5; scene.add(galacticCore);
+        const dustPos = new Float32Array(1500 * 3); for(let i=0; i<1500*3; i+=3) { dustPos[i] = (Math.random()-0.5)*1500; dustPos[i+1] = (Math.random()-0.5)*500; dustPos[i+2] = (Math.random()-0.5)*1500; }
+        const dustLanes = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(dustPos, 3)), new THREE.PointsMaterial({ color: 0x5500ff, size: 5, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending })); scene.add(dustLanes);
+        
+        const galCount = 4000; const galPos = new Float32Array(galCount * 3); const galCol = new Float32Array(galCount * 3);
+        const c1 = new THREE.Color("#ff00cc"); const c2 = new THREE.Color("#00aaff");
+        for(let i=0; i<galCount; i++) {
+            const i3 = i * 3; const radius = Math.random() * 350 + 50; const angle = radius * 0.02 + (i % 3) * (Math.PI * 2 / 3);
+            galPos[i3] = Math.cos(angle) * radius + (Math.random()-0.5)*30; galPos[i3+1] = (Math.random()-0.5) * 30; galPos[i3+2] = Math.sin(angle) * radius + (Math.random()-0.5)*30;
+            const c = Math.random() > 0.5 ? c1 : c2; galCol[i3] = c.r; galCol[i3+1] = c.g; galCol[i3+2] = c.b;
+        }
+        const galaxy = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(galPos, 3)).setAttribute('color', new THREE.BufferAttribute(galCol, 3)), new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending })); galaxy.position.z = -150; scene.add(galaxy);
+
+        const monoliths = []; for(let i=0; i<6; i++) { const m = new THREE.Mesh(new THREE.IcosahedronGeometry(25, 0), new THREE.MeshBasicMaterial({ color: 0x444444, wireframe: true, transparent:true, opacity: 0.2 })); m.position.set((Math.random()-0.5)*700, (Math.random()-0.5)*300+50, (Math.random()-0.5)*700-100); scene.add(m); monoliths.push(m); }
+        const celestialHalo = new THREE.Mesh(new THREE.TorusGeometry(400, 1, 16, 200), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.1 })); celestialHalo.rotation.x = Math.PI/2; scene.add(celestialHalo);
+
+        // OMEGA
+        const skyDome = new THREE.Mesh(new THREE.IcosahedronGeometry(1000, 2), new THREE.MeshBasicMaterial({ color: 0x111122, wireframe: true, transparent: true, opacity: 0.05, side: THREE.BackSide })); scene.add(skyDome);
+        
+        const auroraMats = []; const auroraParams = [{ color1: new THREE.Color('#00ff88'), color2: new THREE.Color('#00aaff'), speed: 0.5, z: -300, scale: 1.0 }, { color1: new THREE.Color('#00ffcc'), color2: new THREE.Color('#5500ff'), speed: 0.3, z: -350, scale: 1.2 }, { color1: new THREE.Color('#88ff00'), color2: new THREE.Color('#0088ff'), speed: 0.7, z: -250, scale: 0.8 }];
+        auroraParams.forEach(params => {
+            const mat = new THREE.ShaderMaterial({ uniforms: { uTime: { value: 0 }, uSpeed: { value: params.speed }, uScale: { value: params.scale }, uColor1: { value: params.color1 }, uColor2: { value: params.color2 } }, transparent: true, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false, vertexShader: `uniform float uTime; uniform float uSpeed; uniform float uScale; varying vec2 vUv; varying float vWave; void main() { vUv = uv; vec3 pos = position; float wave1 = sin(pos.x * 0.01 * uScale + uTime * uSpeed) * 40.0; float wave2 = cos(pos.x * 0.025 * uScale - uTime * uSpeed * 1.5) * 20.0; float wave3 = sin(pos.y * 0.05 + uTime * uSpeed * 0.5) * 10.0; pos.z += wave1 + wave2; pos.y += wave3; vWave = wave1 + wave2; gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0); }`, fragmentShader: `uniform vec3 uColor1; uniform vec3 uColor2; varying vec2 vUv; varying float vWave; void main() { float alpha = smoothstep(0.0, 0.3, vUv.y) * smoothstep(1.0, 0.6, vUv.y); float streak = sin(vUv.x * 50.0 + vWave * 0.05) * 0.5 + 0.5; alpha *= (0.7 + streak * 0.3); vec3 finalColor = mix(uColor1, uColor2, vUv.y + vWave * 0.005); gl_FragColor = vec4(finalColor * 0.3, alpha * 0.2); }` });
+            auroraMats.push(mat); const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1500, 300, 100, 50), mat); mesh.position.set(0, 150, params.z); mesh.rotation.x = 0.1; scene.add(mesh);
         });
 
+        const pillars = []; for(let i=0; i<10; i++) { const p = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 600, 8), new THREE.MeshBasicMaterial({ color: 0x5500ff, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending })); p.position.set((Math.random()-0.5)*800, 0, (Math.random()-0.5)*400 - 300); scene.add(p); pillars.push(p); }
+        const sentinels = []; for(let i=0; i<5; i++) { const s = new THREE.Mesh(new THREE.ConeGeometry(5, 10, 4), new THREE.MeshBasicMaterial({ color: 0xff0055, wireframe: true })); scene.add(s); sentinels.push({ mesh: s, angle: (i/5)*Math.PI*2, radius: 120 + Math.random()*50, speed: 0.5 + Math.random()*0.5 }); }
+
+        const rainCount = 300; const rainPos = [];
+        for(let i=0; i<rainCount; i++) { const x = (Math.random()-0.5) * 800; const y = (Math.random()-0.5) * 400; const z = (Math.random()-0.5) * 600 - 200; rainPos.push(x, y, z); rainPos.push(x, y+20, z); }
+        const dataRain = new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(rainPos, 3)), new THREE.LineBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.1 })); scene.add(dataRain);
+
+        const cubes = []; for(let i=0; i<8; i++) { const c = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial({ color: 0xff00cc, wireframe: true, transparent: true, opacity: 0.15 })); c.position.set((Math.random()-0.5)*300, (Math.random()-0.5)*150+50, (Math.random()-0.5)*300); scene.add(c); cubes.push(c); }
+        
+        const mountains = new THREE.Mesh(new THREE.PlaneGeometry(1200, 150, 40, 10), new THREE.MeshBasicMaterial({ color: 0x330066, wireframe: true, transparent: true, opacity: 0.1 }));
+        const mPos = mountains.geometry.attributes.position; for(let i=0; i<mPos.count; i++) { if(mPos.getY(i)>0) mPos.setY(i, mPos.getY(i) + Math.random()*50); } mountains.position.set(0, 50, -600); scene.add(mountains);
+
+        const nearDustPos = new Float32Array(200 * 3); for(let i=0; i<600; i+=3) { nearDustPos[i] = (Math.random()-0.5)*120; nearDustPos[i+1] = (Math.random()-0.5)*60; nearDustPos[i+2] = 15 + Math.random()*45; }
+        const nearDust = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(nearDustPos, 3)), new THREE.PointsMaterial({ color: 0xffffff, size: 0.2, transparent: true, opacity: 0.3 })); scene.add(nearDust);
+
+        // POST PROCESSING
+        const CinematicShader = { uniforms: { "tDiffuse": { value: null }, "amount": { value: 0.002 }, "angle": { value: 0.0 } }, vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 ); }`, fragmentShader: `uniform sampler2D tDiffuse; uniform float amount; varying vec2 vUv; void main() { vec2 offset = amount * vec2( cos(0.0), sin(0.0)); vec4 cr = texture2D(tDiffuse, vUv + offset); vec4 cga = texture2D(tDiffuse, vUv); vec4 cb = texture2D(tDiffuse, vUv - offset); vec3 color = vec3(cr.r, cga.g, cb.b); float dist = distance(vUv, vec2(0.5)); color *= smoothstep(0.8, 0.2, dist * (1.0 + amount)); gl_FragColor = vec4(color, cga.a); }` };
+        const composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, camera)); composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), CONFIG.bloomStrength, 0.5, CONFIG.bloomThreshold));
+        const cinePass = new ShaderPass(CinematicShader); composer.addPass(cinePass);
+
+        // INTERACTION
+        let speed = 0.1; let isPressed = false;
+        window.addEventListener('mousedown', () => { isPressed = true; cursorRing.style.borderColor = "#ff0055"; });
+        window.addEventListener('mouseup', () => { isPressed = false; cursorRing.style.borderColor = "#00ffff"; });
+        window.addEventListener('touchstart', () => { isPressed = true; }); window.addEventListener('touchend', () => { isPressed = false; });
+
+        // ANIMATION
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = Math.min(clock.getDelta(), 0.05); const time = clock.getElapsedTime();
+            
+            speed += ((isPressed ? 3.0 : 0.1) - speed) * 0.003;
+            terrainMat.uniforms.uColor.value.lerpColors(CONFIG.roseColor, CONFIG.blueColor, Math.min(1, speed / 2.5));
+            targetMouse.lerp(mouse, 0.1); terrainMat.uniforms.uMouse.value = targetMouse; terrainMat.uniforms.uTime.value += speed * 0.05; terrainMat.uniforms.uHover.value = isPressed ? 2.0 : 1.0;
+            
+            roseGroup.rotation.y += speed * delta * 0.5; r1.rotation.x = Math.PI/2 + Math.sin(time)*0.2; r1.rotation.y += speed * delta; r2.rotation.y -= speed * delta; r3.rotation.x += speed * delta * 0.5;
+            holoMat.uniforms.uTime.value = time; photoMesh.lookAt(camera.position);
+
+            const hPos = heartSystem.geometry.attributes.position.array;
+            for(let i=0; i<heartCount; i++) { hPos[i*3+1] += heartSpeed[i] * delta * 10; if(hPos[i*3+1] > 50) hPos[i*3+1] = -50; }
+            heartSystem.geometry.attributes.position.needsUpdate = true;
+
+            const pArr = particles.geometry.attributes.position.array;
+            for(let i=0; i<pCount; i++) {
+                const idx = i*3; const y = (time * (1 + speed) + pOffsets[i]) % 60 - 30; const radius = 22 + Math.sin(y * 0.2) * 5;
+                const angle = y * 0.5 + time + (i % 2 === 0 ? 0 : Math.PI);
+                pArr[idx] = Math.cos(angle) * radius; pArr[idx+1] = y; pArr[idx+2] = Math.sin(angle) * radius;
+            }
+            particles.geometry.attributes.position.needsUpdate = true; particles.rotation.y = -time * 0.2;
+
+            sMat.uniforms.uTime.value = time; starfield.rotation.y = time * 0.02; dustLanes.rotation.y = time * 0.01; galacticCore.rotation.z = time * 0.05; galaxy.rotation.y = time * 0.015; celestialHalo.rotation.z = time * 0.01;
+            
+            voidGrid.position.z += speed * 5 * delta; if(voidGrid.position.z > 200) voidGrid.position.z = -200;
+            subGrid.position.z += speed * 8 * delta; if(subGrid.position.z > 200) subGrid.position.z = -200;
+            interGrid.position.z += speed * 12 * delta; interGrid.rotation.z = Math.sin(time * 0.1) * 0.1; if(interGrid.position.z > 200) interGrid.position.z = -200;
+            fluxGrid.position.z += speed * 25 * delta; if(fluxGrid.position.z > 200) fluxGrid.position.z = -200;
+            crossGrid.position.x += speed * 4 * delta; if(crossGrid.position.x > 200) crossGrid.position.x = -200; noiseGrid.rotation.z -= delta * 0.01;
+            circuitGrid.position.z += speed * 2 * delta; if(circuitGrid.position.z > 200) circuitGrid.position.z = -200;
+            isoGrid.position.z += speed * 15 * delta; if(isoGrid.position.z > 200) isoGrid.position.z = -200;
+            
+            const microPos = microGrid.geometry.attributes.position.array; for(let i=0; i<microPos.length; i+=3) { microPos[i+2] += speed * 20 * delta; if(microPos[i+2] > 300) microPos[i+2] = -300; } microGrid.geometry.attributes.position.needsUpdate = true;
+
+            dataRain.position.y -= speed * 10 * delta; if(dataRain.position.y < -100) dataRain.position.y = 100;
+            cubes.forEach(c => { c.rotation.x += delta * 0.2; c.rotation.y += delta * 0.3; });
+            monoliths.forEach(m => { m.rotation.x += delta * 0.1; m.rotation.y += delta * 0.05; });
+
+            skyDome.rotation.y += delta * 0.02; auroraMats.forEach(mat => { mat.uniforms.uTime.value = time; });
+            sentinels.forEach(s => { s.angle += delta * s.speed * 0.5; s.mesh.position.x = Math.cos(s.angle) * s.radius; s.mesh.position.z = Math.sin(s.angle) * s.radius; s.mesh.rotation.y += delta; s.mesh.rotation.z += delta; });
+            
+            nearDust.rotation.y += delta * 0.05;
+            cinePass.uniforms.amount.value = 0.002 + (speed * 0.005);
+
+            controls.update(); composer.render();
+        }
+        animate();
+        window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); composer.setSize(window.innerWidth, window.innerHeight); });
     </script>
 </body>
 </html>
